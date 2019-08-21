@@ -1,5 +1,4 @@
 let pixels = [];
-let colors = ["green","red","blue"];
 let neighbors = [-160,-159,-161,160,159,161,-1,1];
 let loop = false;
 drawMap();
@@ -47,6 +46,18 @@ function drawMap()
         })
         pixels.push(pixel);
     }
+    $("body").append("<button id='start' >start/stop</button>");
+    $("#start").click((e)=>{
+        if(loop)
+            loop=!loop;
+        else{
+            loop = !loop;
+            conway();
+        }
+  
+        e.preventDefault();
+    })
+
 
 }
 
