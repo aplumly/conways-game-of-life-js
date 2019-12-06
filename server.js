@@ -8,7 +8,7 @@ let PORT = 80;
 let hits = 0;
 let app = express();
 app.use(bodyParser.json());
-app.use("/", express.static(__dirname+"/public"));
+app.use("/public", express.static(__dirname+"/public"));
 app.get('/',function(req,res){
     //console.log(++hits);
     return res.sendFile(__dirname+"/index.html");
