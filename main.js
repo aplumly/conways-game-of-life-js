@@ -1,112 +1,263 @@
+window.ctx = new AudioContext();
+window.audio = document.getElementById('music');
+window.audioSrc = ctx.createMediaElementSource(audio);
+window.analyser = ctx.createAnalyser();
+analyser.fftSize=128;
+audioSrc.connect(ctx.destination);
+audioSrc.connect(analyser);
+
+window.freqData = new Uint8Array(analyser.frequencyBinCount);
+analyser.getByteFrequencyData(freqData);
+
+
+
+
+
+
+
+let wmod=(128*2)*2;
+let hmod=(72*2)*2;
+
+let width = window.innerWidth;
+let height = window.innerHeight;
+let pixelwidth = width/wmod;
+let pixelheight = height/hmod;
 let pixels = [];
-let neighbors = [-160,-159,-161,160,159,161,-1,1];
-let loop = false;
-drawMap();
+let limitClicks=false;
+let ud=false
+let visuals=false;
+let neighbors=[-(wmod+1),-(wmod+2),-(wmod),-1,1,wmod,(wmod+2),(wmod+1)];
+let pause=true;
 
-$(document).keyup((e)=>{
-    switch(e.which)
-    {
-        case 32:
-            if(loop)
-                loop=!loop;
-            else{
-                loop = !loop;
-                conway();
-            }
-  
-        break;
-
-        default:
-        break;
-    }
-})
-
-
-
-
-
-function drawMap() 
-{
-    for(let i=0;i<12800;i++)
-    {
-        //console.log(i)
-        let pixel = $("<div>")
-        pixel.attr("class","pixel");
-        pixel.attr("id",""+i);
-        pixel.css("background-color","black")
-        $("body").append(pixel);
-        pixel.click((e)=>{
-            //console.log(pixel.attr("id"));
-            if(pixel.css("background-color")!="rgb(0, 0, 255)")
-                pixel.css("background-color","blue");
+document.addEventListener('keyup', (e)=>{
+    //e.preventDefault;
+    if(e.key=='p')
+        {
+            if(pause)
+                {ud=true;pause=false;}
             else
-                pixel.css("background-color","black");
-
-            e.preventDefault();
-        })
-        pixels.push(pixel);
-    }
-    $("body").append("<button id='start' >start/stop</button>");
-    $("#start").click((e)=>{
-        if(loop)
-            loop=!loop;
-        else{
-            loop = !loop;
-            conway();
-        }
-  
-        e.preventDefault();
-    })
-
-
-}
-
-function conway()
-{
-    let create = []
-    let destroy = []
-    pixels.forEach((element,i)=>{
-        //check number of neighbors
-        let aliveNeighbors = 0;
-        neighbors.forEach((neighbor)=>{
-            //console.log((parseInt(element.attr("id"))+neighbor));
-            if($("#"+(parseInt(element.attr("id"))+neighbor)).css("background-color")=="rgb(0, 0, 255)")
-            {
-                aliveNeighbors=aliveNeighbors+1;
-            }
-            //console.log($("#"+(element.attr("id")+neighbor)).css("background-color"))
-        })
-        //conway's rules
-        if(element.css("background-color")=="rgb(0, 0, 255)")
-        {//console.log(aliveNeighbors);
-            if(aliveNeighbors<2)
-                destroy.push(element);
-            if(aliveNeighbors>3)
-                destroy.push(element);
-        }else{
-            //console.log(aliveNeighbors);
-            if(aliveNeighbors==3)
-                create.push(element);
-        }
+                pause=true;
             
-
-    })
-
-    while(destroy.length>0){
-        let deadOne = destroy.pop();
-        deadOne.css("background-color","black");
-    }
-
-    
-    while(create.length>0)
+        }
+    if(e.key=='r')
     {
-        let child = create.pop();
-        child.css("background-color","blue");
+        pixels=[];
+        ud=false;
+        background(143, 143, 143);
+        //draw pixels(black)
+        //frameRate(2);
+        let run = true;
+        let x=0;
+        let y=0;
+        let f=0;
+        
+        fill(f)
+        while(run)
+        {
+            
+            rect(x,y,pixelwidth,pixelheight); 
+            pixels.push({x:x,y:y,state:false})
+            if(x<width)
+                x=x+pixelwidth;
+            else{
+                y=y+pixelheight;
+                x=0;
+            }
+            
+            if(x>=width&&y>=height)
+                run=false;
+            
+            
+        }
     }
 
-    if(loop)
-        setTimeout(()=>{conway();},20);
+    if(e.key=='x')
+        drawAnX(70);
+    if(e.key=='t')
+        drawAnt(70);
+    if(e.key=='m')
+        audio.play();
+    if(e.key=='v')
+        visuals=!visuals;
     
+});
+
+function setup() {
+    createCanvas(width, height);
+    background(143, 143, 143);
+    //draw pixels(black)
+    //frameRate(2);
+    let run = true;
+    let x=0;
+    let y=0;
+    let f=0;
+    
+    fill(f)
+    while(run)
+    {
+        
+        rect(x,y,pixelwidth,pixelheight); 
+        pixels.push({x:x,y:y,state:false})
+        if(x<width)
+            x=x+pixelwidth;
+        else{
+            y=y+pixelheight;
+            x=0;
+        }
+        
+        if(x>=width&&y>=height)
+            run=false;
+        
+        
+    }
+    console.log(pixels.length)
+    
+    
+
+}
+
+function draw() {
+    //get mouse press and update pixel to white
+    
+    
+    //also...
+    //do logic for updating necessary pixels
+    //f=8
+
+    if(!pause&&ud)
+    {   
+        let create=[];
+        let destroy=[];
+        pixels.forEach((element,i)=>{
+            let aliveNeighbors=0;
+            neighbors.forEach((neighbor)=>{
+                if(i+neighbor>=0&&i+neighbor<pixels.length-1)
+                {
+
+                    if(pixels[i+neighbor].state)
+                        aliveNeighbors=aliveNeighbors+1;
+
+                }
+
+            })
+
+            if(element.state)
+            {
+                if(aliveNeighbors<2)
+                {
+                    destroy.push(i)
+                }
+                if(aliveNeighbors>3)
+                {
+                    destroy.push(i)
+                }
+
+
+            }else{
+                if(aliveNeighbors==3)
+                {
+                    create.push(i);
+                }
+            }
+        })
+
+        create.forEach((e)=>{
+            pixels[e].state=true;
+            fill(255)
+            rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
+        })
+        destroy.forEach((e)=>{
+            pixels[e].state=false;
+            fill(0)
+            rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
+        })
+        ud=false;
+        setTimeout(_=>{ud=true;},20)
+        
+    }
+    
+    
+
+
+    if(mouseIsPressed)
+    {
+        if(!limitClicks)
+        {
+            //get xy and apply correct pixel
+            let index=(Math.floor((mouseY/pixelheight))*(wmod+1))+Math.floor(mouseX/pixelwidth);
+            if(index>=0&&index<pixels.length){
+                limitClicks=true;            
+                if(pixels[index].state==false)
+                    {pixels[index].state=true;fill(255)}
+                else
+                    {pixels[index].state=false;fill(0)}
+                rect(pixels[index].x,pixels[index].y,pixelwidth,pixelheight)
+                setTimeout(_=>{limitClicks=false},200)
+            }
+
+            
+        }
+
+
+
+    }
+
+    if(visuals)
+        visualize();
+
+      
 }
 
 
+
+function drawAnX(size)
+{
+        //begin excess
+        let mid=pixels.length/2;
+        pixels[mid].state=true;
+        fill(255);
+        rect(pixels[mid].x,pixels[mid].y,pixelwidth,pixelheight)
+        
+        for(let i = 1;i<size;i++)
+        {
+            fill(255);
+            pixels[mid-(wmod*i)].state=true;
+            pixels[mid-((wmod+2)*i)].state=true;
+            rect(pixels[mid-(wmod*i)].x,pixels[mid-(wmod*i)].y,pixelwidth,pixelheight);
+            rect(pixels[mid-((wmod+2)*i)].x,pixels[mid-((wmod+2)*i)].y,pixelwidth,pixelheight);
+            pixels[mid+(wmod*i)].state=true;
+            pixels[mid+((wmod+2)*i)].state=true;
+            rect(pixels[mid+(wmod*i)].x,pixels[mid+(wmod*i)].y,pixelwidth,pixelheight);
+            rect(pixels[mid+((wmod+2)*i)].x,pixels[mid+((wmod+2)*i)].y,pixelwidth,pixelheight);
+    
+        }
+}
+
+function drawAnt(size)
+{
+    let mid=pixels.length/2;
+    pixels[mid].state=true;
+    fill(255);
+    rect(pixels[mid].x,pixels[mid].y,pixelwidth,pixelheight)
+    
+    for(let i = 1;i<size;i++)
+    {
+        fill(255);
+        pixels[mid-i].state=true;
+        pixels[mid-((wmod+1)*i)].state=true;
+        rect(pixels[mid-i].x,pixels[mid-i].y,pixelwidth,pixelheight);
+        rect(pixels[mid-((wmod+1)*i)].x,pixels[mid-((wmod+1)*i)].y,pixelwidth,pixelheight);
+        pixels[mid+i].state=true;
+        pixels[mid+((wmod+1)*i)].state=true;
+        rect(pixels[mid+i].x,pixels[mid+i].y,pixelwidth,pixelheight);
+        rect(pixels[mid+((wmod+1)*i)].x,pixels[mid+((wmod+1)*i)].y,pixelwidth,pixelheight);
+
+    }
+}
+
+function visualize()
+{
+    analyser.getByteFrequencyData(freqData);
+    drawAnt(freqData[10]*.25);
+    drawAnX(freqData[25]*.25);
+}
