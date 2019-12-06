@@ -1,18 +1,19 @@
-window.ctx = new AudioContext();
-window.audio = document.getElementById('music');
-window.audioSrc = ctx.createMediaElementSource(audio);
-window.analyser = ctx.createAnalyser();
-analyser.fftSize=128;
-audioSrc.connect(ctx.destination);
-audioSrc.connect(analyser);
-
-window.freqData = new Uint8Array(analyser.frequencyBinCount);
-analyser.getByteFrequencyData(freqData);
 
 
 
+function audiosetup()
+{
+    window.ctx = new AudioContext();
+    window.audio = document.getElementById('music');
+    window.audioSrc = ctx.createMediaElementSource(audio);
+    window.analyser = ctx.createAnalyser();
+    analyser.fftSize=128;
+    audioSrc.connect(ctx.destination);
+    audioSrc.connect(analyser);
 
-
+    window.freqData = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(freqData);
+}
 
 
 let wmod=(128*2)*2;
@@ -75,10 +76,13 @@ document.addEventListener('keyup', (e)=>{
         drawAnX(70);
     if(e.key=='t')
         drawAnt(70);
+    if(e.key=='l')
+        audiosetup();
     if(e.key=='m')
         audio.play();
     if(e.key=='v')
         visuals=!visuals;
+    
     
 });
 
@@ -261,3 +265,5 @@ function visualize()
     drawAnt(freqData[10]*.25);
     drawAnX(freqData[25]*.25);
 }
+
+alert("hi and welcome! here is a breakdown of the controlls. \nclick around to draw\n press P to start and pause\npress x to draw and X\npress t to draw a t\npress l then m and finally v after interacting with the page to start a music visualizer.\nthis will be later updated with some helpful buttons, but works for now.")
