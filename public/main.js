@@ -219,7 +219,7 @@ function draw() {
 function drawAnX(size)
 {
         //begin excess
-        let mid=pixels.length/2;
+        let mid=Math.round(pixels.length/2);
         pixels[mid].state=true;
         fill(255);
         rect(pixels[mid].x,pixels[mid].y,pixelwidth,pixelheight)
@@ -241,7 +241,7 @@ function drawAnX(size)
 
 function drawAnt(size)
 {
-    let mid=pixels.length/2;
+    let mid=Math.round(pixels.length/2);
     pixels[mid].state=true;
     fill(255);
     rect(pixels[mid].x,pixels[mid].y,pixelwidth,pixelheight)
