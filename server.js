@@ -14,9 +14,9 @@ app.get('/',function(req,res){
     return res.sendFile(__dirname+"/index.html");
     
 })
-app.get('/audio/320',(req,res)=>{
-    res.sendFile(__dirname+"/public/alejo.mp3")
-})
+// app.get('/audio/320',(req,res)=>{
+//     res.sendFile(__dirname+"/public/alejo.mp3")
+// })
 
 app.listen(PORT,function(){
     console.log("App listening on PORT "+ PORT);
