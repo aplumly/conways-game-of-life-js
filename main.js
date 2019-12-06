@@ -1,18 +1,21 @@
-window.ctx = new AudioContext();
-window.audio = document.getElementById('music');
-window.audioSrc = ctx.createMediaElementSource(audio);
-window.analyser = ctx.createAnalyser();
-analyser.fftSize=128;
-audioSrc.connect(ctx.destination);
-audioSrc.connect(analyser);
-
-window.freqData = new Uint8Array(analyser.frequencyBinCount);
-analyser.getByteFrequencyData(freqData);
 
 
 
 
 
+function audiosetup()
+{
+    window.ctx = new AudioContext();
+    window.audio = document.getElementById('music');
+    window.audioSrc = ctx.createMediaElementSource(audio);
+    window.analyser = ctx.createAnalyser();
+    analyser.fftSize=128;
+    audioSrc.connect(ctx.destination);
+    audioSrc.connect(analyser);
+
+    window.freqData = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(freqData);
+}
 
 
 let wmod=(128*2)*2;
@@ -75,10 +78,13 @@ document.addEventListener('keyup', (e)=>{
         drawAnX(70);
     if(e.key=='t')
         drawAnt(70);
+    if(e.key=='l')
+        audiosetup();
     if(e.key=='m')
         audio.play();
     if(e.key=='v')
         visuals=!visuals;
+    
     
 });
 
