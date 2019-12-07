@@ -20,7 +20,7 @@ function audiosetup()
             song=0;
         audio.currentTime = 0;
         console.log("ended");
-        document.getElementById("audioBitRate").src=`/public/${++song}.mp3`
+        document.getElementById("audioBitRate").src=`./public/${++song}.mp3`
         audio.load();
         audio.play();
    });
