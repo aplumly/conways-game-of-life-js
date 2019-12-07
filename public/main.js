@@ -1,7 +1,7 @@
 
 
-
-
+let song=1;
+let number_of_songs=6;
 
 function audiosetup()
 {
@@ -12,9 +12,19 @@ function audiosetup()
     analyser.fftSize=128;
     audioSrc.connect(ctx.destination);
     audioSrc.connect(analyser);
-
+    
     window.freqData = new Uint8Array(analyser.frequencyBinCount);
     analyser.getByteFrequencyData(freqData);
+    audio.addEventListener("ended", function(){
+        if(song>=number_of_songs)
+            song=0;
+        audio.currentTime = 0;
+        console.log("ended");
+        document.getElementById("audioBitRate").src=`/public/${++song}.mp3`
+        audio.load();
+        audio.play();
+   });
+
 }
 
 
@@ -81,7 +91,11 @@ document.addEventListener('keyup', (e)=>{
     if(e.key=='l')
         audiosetup();
     if(e.key=='m')
-        audio.play();
+    {   if(audio.paused)
+            audio.play();
+        else
+            audio.pause();
+    }
     if(e.key=='v')
         visuals=!visuals;
     
@@ -218,7 +232,7 @@ function draw() {
 
 function drawAnX(size)
 {
-        //begin excess
+        
         let mid=Math.round(pixels.length/2);
         pixels[mid].state=true;
         fill(255);
@@ -265,7 +279,7 @@ function visualize()
 {
     analyser.getByteFrequencyData(freqData);
     drawAnt(freqData[10]*.25);
-    drawAnX(freqData[25]*.25);
+    drawAnX(freqData[35]*.25);
 }
 
 alert("hi and welcome! here is a breakdown of the controls. \nclick around to draw\n press P to start and pause\npress x to draw and X\npress t to draw a t\npress l then m and finally v after interacting with the page to start a music visualizer. remember to press p if the canvas isn't animating :)\nthis will be updated later with some helpful buttons, but works for now.")
