@@ -39,17 +39,20 @@ let pixels = [];
 let limitClicks=false;
 let ud=false
 let visuals=false;
-let neighbors=[-(wmod+1),-(wmod-1),-(wmod),-1,1,wmod,(wmod-1),(wmod+1)];
-let pause=true;
+let neighbors=[-(wmod+1),-(wmod),-(wmod-1),-1,1,wmod,(wmod-1),(wmod+1)];
+let animate=0;
+let rule=1;
+let wra=0;
+let wrb=0;
 
 document.addEventListener('keyup', (e)=>{
     //e.preventDefault;
     if(e.key=='p')
         {
-            if(pause)
-                {ud=true;pause=false;}
+            if(animate)
+                animate=0;
             else
-                pause=true;
+                animate=1;
             
         }
     if(e.key=='r')
@@ -72,6 +75,8 @@ document.addEventListener('keyup', (e)=>{
     if(e.key=='v')
         visuals=!visuals;
     
+    if(keyCode>=0x30&&keyCode<=0x39)
+        rule=keyCode-0x30;
     
 });
 
@@ -79,14 +84,30 @@ function setup() {
     createCanvas(width, height);
 
     setgrid();
-    
-
+    // pixels[5000].state=true;
+    // fill(255)
+    // rect(pixels[5000].x,pixels[5000].y,pixelwidth,pixelheight)
 }
 
 function draw() {
 
+    switch(rule*animate)
+    {
+        case 1: conway();
+        break;
+        case 2: wra=1;wrb=4;rule=30;
+        break;
+        case 3: wra=1;wrb=6;rule=30;
+        break;
+        case 4: alert("enter a custom wolfram value. let a be < b and in range of 1 to 7")
+            wra = prompt("enter value a");wrb=prompt("enter value b");rule=30;
+        break;
+        case 30:wolframRule(wra,wrb);
+        break;
+        default:
+        break;
+    }
 
-    conway();
     
     
 
@@ -103,8 +124,7 @@ function draw() {
 
 function conway()
 {
-    if(!pause&&ud)
-    {   
+ 
         let create=[];
         let destroy=[];
         pixels.forEach((element,i)=>{
@@ -150,12 +170,63 @@ function conway()
             fill(0)
             rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
         })
-        ud=false;
-        setTimeout(_=>{ud=true;},20)
+
         
-    }
+    
 }
 
+
+function wolframRule(a,b)
+{
+
+ 
+            let create=[];
+            let destroy=[];
+            pixels.forEach((element,i)=>{
+                let neighborsAsBinary=""
+                if(!element.state){
+                    for(let n=0;n<3;n++)
+                    {
+                        neighbor = neighbors[n];
+                        if(i+neighbor>=0&&i+neighbor<pixels.length-1)
+                        {
+        
+                            if(pixels[i+neighbor].state)
+                                neighborsAsBinary=neighborsAsBinary+"1"
+                            else
+                                neighborsAsBinary=neighborsAsBinary+"0"
+        
+                        }
+                    }
+                    let neighborsAsInteger= parseInt(neighborsAsBinary, 2);
+                        
+                    if(neighborsAsInteger>=a&&neighborsAsInteger<=b)
+                        create.push(i);
+                }
+
+
+    
+                
+            })
+
+            create.forEach((e)=>{
+                pixels[e].state=true;
+                fill(255)
+                rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
+            })
+            destroy.forEach((e)=>{
+                pixels[e].state=false;
+                fill(0)
+                rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
+            })
+
+            
+        
+    
+
+
+
+}
 
 function processClicks()
 {
@@ -274,4 +345,4 @@ function visualize()
     drawAnX(freqData[10]*.25);
 }
 
-alert("hi and welcome! here is a breakdown of the controls. \nclick around to draw\n press P to start and pause\npress x to draw and X\npress t to draw a t\npress l then m and finally v after interacting with the page to start a music visualizer. remember to press p if the canvas isn't animating :)\nthis will be updated later with some helpful buttons, but works for now.")
+alert("hi and welcome! here is a breakdown of the controls. \nclick around to draw\n press P to start and pause\npress x to draw and X\npress t to draw a t\npress l then m and finally v after interacting with the page to start a music visualizer. remember to press p if the canvas isn't animating :)\nnew:press 1-4 to change things up\nthis will be updated later with some helpful buttons, but works for now.")
