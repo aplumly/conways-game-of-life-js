@@ -1,5 +1,7 @@
 
 
+
+
 let song=1;
 let number_of_songs=6;
 
@@ -91,6 +93,8 @@ document.addEventListener('keyup', (e)=>{
     if(e.key=='v')
         visuals=!visuals;
     
+    if(e.key=='b')
+        rule=10;
     if(keyCode>=0x30&&keyCode<=0x39)
         rule=keyCode-0x30;
     
@@ -132,6 +136,40 @@ function draw() {
             customConway.destroy=eval(prompt("enter a destruction rule: "));
 
 
+            rule=13;
+        break;
+        case 10: 
+            //flip coin for for 0 to 8
+            let c='';
+            let d='';
+            for(let i=0;i<9;i++)
+            {
+                if(Math.floor(Math.random()*2)==1){
+                    if(c=='')
+                    {
+                        c=c+`n==${i}`;
+                    }else
+                    {
+                        c=c+`||n==${i}`;
+                    }
+                }
+            }
+            for(let i=0;i<9;i++)
+            {
+                if(Math.floor(Math.random()*2)==1){
+                    if(d=='')
+                    {
+                        d=d+`n==${i}`;
+                    }else
+                    {
+                        d=d+`||n==${i}`;
+                    }
+                }
+            }
+
+            
+            customConway.create=eval(`(n)=>{return ${c}}`)
+            customConway.destroy=eval(`(n)=>{return ${d}}`)
             rule=13;
         break;
         case 13:variableConway(customConway);
@@ -737,4 +775,4 @@ function visualize()
     drawAnX(freqData[10]*.25);
 }
 
-alert("hi and welcome! here is a breakdown of the controls. \nclick around to draw\n press P to start and pause\npress x to draw and X\npress t to draw a t\npress l then m and finally v after interacting with the page to start a music visualizer. remember to press p if the canvas isn't animating :)\nnew:press 1-4 to change things up\nthis will be updated later with some helpful buttons, but works for now.")
+alert("hi and welcome! here is a breakdown of the controls. \nclick around to draw\n press P to start and pause\npress x to draw and X\npress t to draw a t\nthe R key will reset the canvas\npress l then m and finally v after interacting with the page to start a music visualizer.\nnew:press 1-9 to change things up\npress b to switch to a completely random ruleset\nthis will be updated later with a helpful ui, but works for now.")

@@ -1,0 +1,98 @@
+/*
+
+create: (n)=>{return n==1||n==4||n==6||n==8}
+destroy: (n)=>{return n==0||n==1||n==2||n==4}
+
+
+
+create: (n)=>{return n==3||n==5||n==6||n==7||n==8}
+destroy: (n)=>{return n==0||n==1||n==2||n==3||n==4||n==5||n==6}
+
+
+create: (n)=>{return n==0||n==1||n==7}
+destroy: (n)=>{return n==2||n==8}
+
+this one is v cool... lifelike and balanced
+create: (n)=>{return n==3||n==6||n==7}
+destroy: (n)=>{return n==0||n==2||n==4||n==8}
+
+when paired with the visualizer is interesting
+create: (n)=>{return n==1||n==3||n==4||n==5||n==6||n==7||n==8}
+destroy: (n)=>{return n==0||n==1||n==2||n==3||n==4||n==7}
+
+creates an interesting fractal pattern
+create: (n)=>{return n==0||n==1||n==2||n==3||n==4||n==5||n==7}
+destroy: (n)=>{return n==0||n==1||n==3||n==5}
+
+this one is smooth... lifelike
+create: (n)=>{return n==3||n==8}
+destroy: (n)=>{return n==2||n==3||n==8}
+
+seed this one with a t
+create: (n)=>{return n==3||n==4||n==5||n==8}
+destroy: (n)=>{return n==0||n==2||n==7||n==8}
+
+creates oscilating lifeforms
+create: (n)=>{return n==3||n==5||n==8}
+destroy: (n)=>{return n==0||n==1||n==3||n==4||n==5||n==7}
+
+creates oscilating life
+create: (n)=>{return n==3||n==6||n==7||n==8}
+destroy: (n)=>{return n==2||n==3||n==4||n==6||n==8}
+
+creates oscilating life... can become very volitle/chaotic
+create: (n)=>{return n==3||n==4||n==7||n==8}
+destroy: (n)=>{return n==1||n==2||n==3||n==6}
+
+t generates a very cool fractal pattern
+create: (n)=>{return n==1||n==6}
+destroy: (n)=>{return n==1||n==2||n==4||n==6||n==7}
+
+a smooth grower
+create: (n)=>{return n==3||n==8}
+destroy: (n)=>{return n==0||n==1||n==2||n==8}
+
+another smooth grower
+create: (n)=>{return n==2||n==7}
+destroy: (n)=>{return n==0||n==1||n==5||n==6||n==7}
+
+this one is very liquid like and makes a cool box when seeded with a t
+create: (n)=>{return n==4||n==5||n==7||n==8}
+destroy: (n)=>{return n==5}
+
+slightly lifelike.. makes oscilating patterns
+create: (n)=>{return n==3||n==8}
+destroy: (n)=>{return n==0||n==2||n==4}
+
+behaves similar to the 1357 rule
+create: (n)=>{return n==1||n==7||n==8}
+destroy: (n)=>{return n==1||n==3||n==4||n==5||n==8}
+
+lifelike/oscilations
+create: (n)=>{return n==3||n==7||n==8}
+destroy: (n)=>{return n==1||n==3||n==6||n==7}
+
+energy becomes entrapped by large blocks of life
+create: (n)=>{return n==0||n==1||n==4}
+destroy: (n)=>{return n==1||n==2||n==3||n==4}
+
+lifelike/oscilations/balanced
+create: (n)=>{return n==4||n==6||n==8}
+destroy: (n)=>{return n==0||n==1||n==5||n==8}
+
+slow grower
+create: (n)=>{return n==3||n==5||n==6}
+destroy: (n)=>{return n==1||n==2||n==4||n==8}
+
+a land of very awesome oscilators. lifelike
+create: (n)=>{return n==3||n==4||n==6||n==7||n==8}
+destroy: (n)=>{return n==1||n==2||n==3||n==4||n==5||n==7}
+
+looks cool with the visualizer. press t for wow
+create: (n)=>{return n==3||n==7||n==8}
+destroy: (n)=>{return n==0||n==1||n==2||n==4||n==5||n==6}
+
+capable of sustaining large bloblike lifeforms
+create: (n)=>{return n==0||n==1||n==5||n==7||n==8}
+destroy: (n)=>{return n==3||n==4}
+*/
