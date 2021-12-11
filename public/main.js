@@ -1,55 +1,32 @@
 
 
 
-
 let song=1;
 let number_of_songs=6;
 
-function audiosetup()
-{
-    window.ctx = new AudioContext();
-    window.audio = document.getElementById('music');
-    window.audioSrc = ctx.createMediaElementSource(audio);
-    window.analyser = ctx.createAnalyser();
-    analyser.fftSize=128;
-    audioSrc.connect(ctx.destination);
-    audioSrc.connect(analyser);
-    
-    window.freqData = new Uint8Array(analyser.frequencyBinCount);
-    analyser.getByteFrequencyData(freqData);
-    audio.addEventListener("ended", function(){
-        if(song>=number_of_songs)
-            song=0;
-        audio.currentTime = 0;
-        console.log("ended");
-        document.getElementById("audioBitRate").src=`./public/${++song}.mp3`
-        audio.load();
-        audio.play();
-   });
-
-}
-
-
-let wmod=((128*2)*2);
-let hmod=((72*2)*2);
-
+let scale = 1;
+let wmod=((128*2)*2)*scale;
+let hmod=((72*2)*2)*scale;
 let width = window.innerWidth;
 let height = window.innerHeight;
 let pixelwidth = width/wmod;
 let pixelheight = height/hmod;
+
 let pixels = [];
 let limitClicks=false;
 let ud=false
 let visuals=false;
 let neighbors=[-(wmod+1),-(wmod),-(wmod-1),-1,1,wmod,(wmod-1),(wmod+1)];
+let sncaRing=[-(2*wmod+1),-(2*wmod),-(2*wmod-1),(-2*wmod+2),(-2*wmod-2),-2,2,2*wmod,(2*wmod-1),(2*wmod+1),(2*wmod-2),(2*wmod+2),(wmod-2),(-wmod-2),(wmod+2),(-wmod+2)]
+let sncaRing2=[-(2*wmod+1),-(2*wmod),-(2*wmod-1),-2,2,2*wmod,(2*wmod-1),(2*wmod+1),(wmod-2),(-wmod-2),(wmod+2),(-wmod+2)]
 let animate=0;
 let rule=1;
 let wra=0;
 let wrb=0;
-
+let wolframRule=30;
 let frameCount=0;
 
-let customConway={create:"",destroy:""};
+let customRuleset={create:"",destroy:""};
 
 let mncaObj409={"nhd0":[-526,-14,498,-2061,-1549,-1037,1011,1523,2035,-3084,-2572,2548,3060,-4107,-3595,3573,4085,-4618,-522,-10,502,4598,-5129,-2057,-1545,-1033,1015,1527,2039,5111,-5640,-3080,-2568,2552,3064,5624,-5639,-3591,-1031,-519,-7,505,1017,3577,5625,-6150,-4102,-2054,-1542,1530,2042,4090,6138,-6149,-4101,-2565,-517,-5,507,2555],"nhd1":[4091,6139,-6660,-4612,-3076,-1540,-1028,1020,1532,3068,4604,6652,-6659,-4611,-3075,-2051,-515,-3,509,2045,3069,4605,6653,-6658,-4610,-3586,-2050,-1026,1022,2046,3582,4606,6654,-7169,-5121,-3585,-2561,-1537,-513,-1,511,1535,2559,3583,5119,7167,-7168,-5120,-3584,-2560,-1536,-512,512,1536,2560,3584,5120,7168,-7167,-5119,-3583],"nhd2":[-2559,-1535,-511,1,513,1537,2561,3585,5121,7169,-6654,-4606,-3582,-2046,-1022,1026,2050,3586,4610,6658,-6653,-4605,-3069,-2045,-509,3,515,2051,3075,4611,6659,-6652,-4604,-3068,-1532,-1020,1028,1540,3076,4612,6660,-6139,-4091,-2555,-507,5,517,2565,4101,6149,-6138,-4090,-2042,-1530,1542,2054,4102,6150,-5625,-3577,-1017],"nhd3":[-505,7,519,1031,3591,5639,-5624,-3064,-2552,2568,3080,5640,-5111,-2039,-1527,-1015,1033,1545,2057,5129,-4598,-502,10,522,4618,-4085,-3573,3595,4107,-3060,-2548,2572,3084,-2035,-1523,-1011,1037,1549,2061,-498,14,526],"nhd4":[]}
 let mncaObj130={"nhd0":[-518,-6,506,-1541,-1029,1019,1531,-2052,2044,-2563,-1027,-515,-3,509,1021,2557,-2562,-1538,1534,2558,-3073,-1537,-513,-1,511,1535,3071,-3072,-1536,-512,512,1536,3072,-3071,-1535,-511,1,513,1537,3073,-2558,-1534,1538,2562,-2557,-1021,-509,3,515,1027,2563,-2044,2052,-1531,-1019,1029,1541,-506,6,518],"nhd1":[-1044,-532,-20,492,1004,-2579,-2067,-1555,1517,2029,2541,-4114,-3602,-3090,3054,3566,4078,-5137,-4625,4591,5103,-6160,-5648,5616,6128,-6671,-1039,-527,-15,497,1009,6641,-7182,-2574,-2062,-1550,1522,2034,2546,7154,-7693,-3597,-3085,3059,3571,7667,-8204,-4620,-4108,4084,4596,8180,-8203,-5131,-1547,-1035,-523,-11,501,1013,1525,5109,8181,-8714,-5642,-2570,-2058,-1546,-1034,1014,1526,2038,2550,5622,8694,-8713,-6153,-3593,-3081,-2569,2551,3063,3575,6135,8695,-9224,-6152,-4104,-3592,3576,4088,6136,9208,-9223,-6663,-4615,-4103,-519,-7,505,4089,4601,6649,9209,-9222,-6662,-4614,-1542,-1030,-518,-6,506,1018,1530,4602,6650,9210,-9733,-7173,-5125,-4613,-2565,-2053,-1541,-1029,1019,1531,2043,2555,4603,5115,7163,9723,-9732,-7172,-5124,-2564,-2052,2044,2556,5116,7164,9724,-9731,-7171,-5635,-5123,-3075,-2563,2557,3069,5117,5629,7165,9725,-10242,-7682,-5634,-5122,-3074,-2562,-1026,-514,-2,510,1022,2558,3070,5118,5630,7678,10238,-10241,-7681,-5633,-3585,-3073,-1025,-513,-1,511,1023,3071,3583,5631,7679,10239,-10240,-7680,-5632,-3584],"nhd2":[-3072,-1024,-512,512,1024,3072,3584,5632,7680,10240,-10239,-7679,-5631,-3583,-3071,-1023,-511,1,513,1025,3073,3585,5633,7681,10241,-10238,-7678,-5630,-5118,-3070,-2558,-1022,-510,2,514,1026,2562,3074,5122,5634,7682,10242,-9725,-7165,-5629,-5117,-3069,-2557,2563,3075,5123,5635,7171,9731,-9724,-7164,-5116,-2556,-2044,2052,2564,5124,7172,9732,-9723,-7163,-5115,-4603,-2555,-2043,-1531,-1019,1029,1541,2053,2565,4613,5125,7173,9733,-9210,-6650,-4602,-1530,-1018,-506,6,518,1030,1542,4614,6662,9222,-9209,-6649,-4601,-4089,-505,7,519,4103,4615,6663,9223,-9208,-6136,-4088,-3576,3592,4104,6152,9224,-8695,-6135,-3575,-3063,-2551,2569,3081,3593,6153,8713,-8694,-5622,-2550,-2038,-1526,-1014,1034,1546,2058,2570,5642,8714,-8181,-5109,-1525,-1013,-501,11,523,1035,1547,5131,8203,-8180,-4596,-4084,4108,4620,8204,-7667,-3571,-3059,3085,3597,7693,-7154,-2546,-2034,-1522,1550,2062,2574,7182,-6641,-1009,-497,15,527,1039,6671,-6128,-5616,5648,6160,-5103,-4591,4625,5137,-4078,-3566,-3054,3090,3602,4114,-2541,-2029,-1517,1555,2067,2579,-1004,-492,20,532,1044],"nhd3":[],"nhd4":[]}
@@ -97,9 +74,70 @@ document.addEventListener('keyup', (e)=>{
         rule=10;
     if(keyCode>=0x30&&keyCode<=0x39)
         rule=keyCode-0x30;
+
+    
     
 });
 
+function setgrid()
+{
+    pixels=[];
+    background(143, 143, 143);
+    //draw pixels(black)
+    //frameRate(2);
+    let run = true;
+    let x=0;
+    let y=0;
+    let f=0;
+    let rowcount=0;
+    let xcount=0;
+    fill(f)
+    while(run)
+    {
+        
+        rect(x,y,pixelwidth,pixelheight); 
+        pixels.push({x:x,y:y,state:false,nstate:0})
+        xcount++;
+        if(xcount<wmod)
+            x=x+pixelwidth;
+        else{
+            y=y+pixelheight;
+            x=0;
+            xcount=0;
+            rowcount++;
+        }
+        
+        if(rowcount>hmod)
+            run=false;
+        
+        
+    }
+    console.log(pixels.length)
+}
+
+function audiosetup()
+{
+    window.ctx = new AudioContext();
+    window.audio = document.getElementById('music');
+    window.audioSrc = ctx.createMediaElementSource(audio);
+    window.analyser = ctx.createAnalyser();
+    analyser.fftSize=128;
+    audioSrc.connect(ctx.destination);
+    audioSrc.connect(analyser);
+    
+    window.freqData = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(freqData);
+    audio.addEventListener("ended", function(){
+        if(song>=number_of_songs)
+            song=0;
+        audio.currentTime = 0;
+        console.log("ended");
+        document.getElementById("audioBitRate").src=`./public/${++song}.mp3`
+        audio.load();
+        audio.play();
+   });
+
+}
 function setup() {
     createCanvas(width, height);
 
@@ -115,66 +153,41 @@ function draw() {
     {
         case 1: conway();
         break;
-        case 2: wra=1;wrb=4;rule=30;
+        case 2: wolframRule=30;rule=30;
         break;
-        case 3: wra=1;wrb=6;rule=30;
+        case 3: wolframRule=150;rule=30;
         break;
-        case 4: alert("enter a custom wolfram value. let a be < b and in range of 1 to 7")
-            wra = prompt("enter value a");wrb=prompt("enter value b");rule=30;
+        case 4: 
+            wolframRule = prompt("enter a wolfram rule. \nnote: odd numbers do not work here.");rule=30;
         break;
-        case 5:kindaconway();
+        case 5:createRandomRuleset(1,15);
+               rule=14;
         break;
         case 6: mnca409();
         break;
         case 7: mnca130();
         break;
-        case 8:crule04();
+        case 8:customRuleset.create=eval("(n)=>{return n==1||n==2||n==7||n==8}")
+               customRuleset.destroy=eval("(n)=>{return n==0||n==1||n==5||n==6||n==7||n==8}")
+               rule=13;
         break;
         case 9:alert("enter a custom conway rule.")
 
-            customConway.create=eval(prompt("enter a creation rule: use a valid js or es 6 function which returns a boolean value.\n the function should take in a value n specifying the number of alive neighbors for the specified cell.\n example: (n)=>{return n<2||n>3}  "));
-            customConway.destroy=eval(prompt("enter a destruction rule: "));
+            customRuleset.create=eval(prompt("enter a creation rule: use a valid js or es 6 function which returns a boolean value.\n the function should take in a value n specifying the number of alive neighbors for the specified cell.\n example: (n)=>{return n<2||n>3}  "));
+            customRuleset.destroy=eval(prompt("enter a destruction rule: "));
 
 
             rule=13;
         break;
         case 10: 
-            //flip coin for for 0 to 8
-            let c='';
-            let d='';
-            for(let i=0;i<9;i++)
-            {
-                if(Math.floor(Math.random()*2)==1){
-                    if(c=='')
-                    {
-                        c=c+`n==${i}`;
-                    }else
-                    {
-                        c=c+`||n==${i}`;
-                    }
-                }
-            }
-            for(let i=0;i<9;i++)
-            {
-                if(Math.floor(Math.random()*2)==1){
-                    if(d=='')
-                    {
-                        d=d+`n==${i}`;
-                    }else
-                    {
-                        d=d+`||n==${i}`;
-                    }
-                }
-            }
-
-            
-            customConway.create=eval(`(n)=>{return ${c}}`)
-            customConway.destroy=eval(`(n)=>{return ${d}}`)
+            createRandomRuleset(0,8);
             rule=13;
         break;
-        case 13:variableConway(customConway);
+        case 13:variableConway(customRuleset);
         break;
-        case 30:wolframRule(wra,wrb);
+        case 14:snca(customRuleset); 
+        break;
+        case 30:wolfram(wolframRule);
         break;
         default:
         break;
@@ -192,7 +205,13 @@ function draw() {
       
 }
 
-
+function updateNeighbors(index, state)
+{
+    neighbors.forEach((neighbor)=> {
+        if(index+neighbor>=0&&index+neighbor<pixels.length)
+            pixels[index+neighbor].nstate+=state;
+    })
+}
 
 function conway()
 {
@@ -200,17 +219,9 @@ function conway()
         let create=[];
         let destroy=[];
         pixels.forEach((element,i)=>{
-            let aliveNeighbors=0;
-            neighbors.forEach((neighbor)=>{
-                if(i+neighbor>=0&&i+neighbor<pixels.length-1)
-                {
 
-                    if(pixels[i+neighbor].state)
-                        aliveNeighbors=aliveNeighbors+1;
 
-                }
-
-            })
+            let aliveNeighbors = element.nstate;
 
             if(element.state)
             {
@@ -236,11 +247,13 @@ function conway()
             pixels[e].state=true;
             fill(255)
             rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
+            updateNeighbors(e,1)
         })
         destroy.forEach((e)=>{
             pixels[e].state=false;
             fill(0)
             rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
+            updateNeighbors(e,-1)
         })
 
         
@@ -248,75 +261,47 @@ function conway()
 }
 
 
-function crule04()
+function createRandomRuleset(lower,upper)
 {
-    let create=[];
-    let destroy=[];
-    pixels.forEach((element,i)=>{
-        let aliveNeighbors=0;
-        neighbors.forEach((neighbor)=>{
-            if(i+neighbor>=0&&i+neighbor<pixels.length-1)
-            {
+                
+                let c='';
+                let d='';
+                for(let i=lower;i<=upper;i++)
+                {
+                    if(Math.floor(Math.random()*2)==1){
+                        if(c=='')
+                        {
+                            c=c+`n==${i}`;
+                        }else
+                        {
+                            c=c+`||n==${i}`;
+                        }
+                    }
+                }
+                for(let i=lower;i<upper;i++)
+                {
+                    if(Math.floor(Math.random()*2)==1){
+                        if(d=='')
+                        {
+                            d=d+`n==${i}`;
+                        }else
+                        {
+                            d=d+`||n==${i}`;
+                        }
+                    }
+                }
 
-                if(pixels[i+neighbor].state)
-                    aliveNeighbors=aliveNeighbors+1;
-
-            }
-
-        })
-
-        if(element.state)
-        {
-            if(aliveNeighbors==0)
-            {
-                destroy.push(i)
-            }
-            if(aliveNeighbors==4)
-            {
-                destroy.push(i)
-            }
-
-
-        }else{
-            if(aliveNeighbors==1)
-            {
-                create.push(i);
-            }
-        }
-    })
-
-    create.forEach((e)=>{
-        pixels[e].state=true;
-        fill(255)
-        rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
-    })
-    destroy.forEach((e)=>{
-        pixels[e].state=false;
-        fill(0)
-        rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
-    })
-
-
+                customRuleset.create=eval(`(n)=>{return ${c}}`)
+                customRuleset.destroy=eval(`(n)=>{return ${d}}`)
 }
-
 
 function variableConway(rule)
 {
     let create=[];
     let destroy=[];
     pixels.forEach((element,i)=>{
-        let aliveNeighbors=0;
-        neighbors.forEach((neighbor)=>{
-            if(i+neighbor>=0&&i+neighbor<pixels.length-1)
-            {
-
-                if(pixels[i+neighbor].state)
-                    aliveNeighbors=aliveNeighbors+1;
-
-            }
-
-        })
-
+ 
+        let aliveNeighbors = element.nstate;
         if(element.state)
         {
             if((rule.destroy(aliveNeighbors)))
@@ -335,11 +320,13 @@ function variableConway(rule)
     })
 
     create.forEach((e)=>{
+        updateNeighbors(e,1)
         pixels[e].state=true;
         fill(255)
         rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
     })
     destroy.forEach((e)=>{
+        updateNeighbors(e,-1)
         pixels[e].state=false;
         fill(0)
         rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
@@ -348,41 +335,31 @@ function variableConway(rule)
 
 }
 
-
-
-
-
-function kindaconway()
+function snca(rule)
 {
+
+
+
     let create=[];
     let destroy=[];
+
     pixels.forEach((element,i)=>{
-        let aliveNeighbors=0;
-        neighbors.forEach((neighbor)=>{
-            if(i+neighbor>=0&&i+neighbor<pixels.length-1)
-            {
-
-                if(pixels[i+neighbor].state)
-                    aliveNeighbors=aliveNeighbors+1;
-
-            }
-
-        })
-
+        let aliveNeighbors = 0
+        sncaRing.forEach((e)=>{
+            if(i+e>=0&&i+e<pixels.length)
+                aliveNeighbors += pixels[i+e].state
+        });
         if(element.state)
         {
-            if(aliveNeighbors<2)
+            if((rule.destroy(aliveNeighbors)))
             {
                 destroy.push(i)
             }
-            if(aliveNeighbors>3)
-            {
-                destroy.push(i)
-            }
+
 
 
         }else{
-            if(aliveNeighbors>=3)
+            if((rule.create(aliveNeighbors)))
             {
                 create.push(i);
             }
@@ -390,16 +367,25 @@ function kindaconway()
     })
 
     create.forEach((e)=>{
+
         pixels[e].state=true;
         fill(255)
         rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
     })
     destroy.forEach((e)=>{
+
         pixels[e].state=false;
         fill(0)
         rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
     })
+
+
+
 }
+
+
+
+
 
 
 function mnca409()
@@ -610,53 +596,61 @@ function mnca130()
 //     return 1;
 // }
 
-function wolframRule(a,b)
+
+function wolfram(a)
 {
+    let create=[]
 
- 
-            let create=[];
-            let destroy=[];
-            pixels.forEach((element,i)=>{
-                let neighborsAsBinary=""
-                if(!element.state){
-                    for(let n=0;n<3;n++)
-                    {
-                        neighbor = neighbors[n];
-                        if(i+neighbor>=0&&i+neighbor<pixels.length-1)
-                        {
+    let atobin = (a >>> 0).toString(2);
+    let pad=""
+    if(atobin.length<8){
+        for(let i=8-atobin.length;i>0;i--)
+        {
+            pad=pad+"0"
+        }
         
-                            if(pixels[i+neighbor].state)
-                                neighborsAsBinary=neighborsAsBinary+"1"
-                            else
-                                neighborsAsBinary=neighborsAsBinary+"0"
-        
-                        }
-                    }
-                    let neighborsAsInteger= parseInt(neighborsAsBinary, 2);
-                        
-                    if(neighborsAsInteger>=a&&neighborsAsInteger<=b)
-                        create.push(i);
+        pad=pad+atobin;
+        atobin=pad;
+    }
+    
+    pixels.forEach((element,i)=>{
+        let neighborsAsBinary=""
+        if(!element.state){
+            for(let n=0;n<3;n++)
+            {
+                neighbor = neighbors[n];
+                if(i+neighbor>=0&&i+neighbor<pixels.length-1)
+                {
+
+                    if(pixels[i+neighbor].state)
+                        neighborsAsBinary=neighborsAsBinary+"1"
+                    else
+                        neighborsAsBinary=neighborsAsBinary+"0"
+
                 }
+            }
+            let neighborsAsInteger= parseInt(neighborsAsBinary, 2);
+            let x=7
+            for(let s=0;s<atobin.length;s++)
+            {
+                if(atobin[s]==1&&neighborsAsInteger==x)
+                {
+                    create.push(i)
+                }
+                x--;
+            }
 
-
-    
-                
-            })
-
-            create.forEach((e)=>{
-                pixels[e].state=true;
-                fill(255)
-                rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
-            })
-
-
-            
-        
-    
-
-
+        }
+    })
+    create.forEach((e)=>{
+        pixels[e].state=true;
+        fill(255)
+        rect(pixels[e].x,pixels[e].y,pixelwidth,pixelheight)
+        updateNeighbors(e,1)
+    })
 
 }
+
 
 function processClicks()
 {
@@ -669,9 +663,13 @@ function processClicks()
             if(index>=0&&index<pixels.length){
                 limitClicks=true;            
                 if(pixels[index].state==false)
-                    {pixels[index].state=true;fill(255)}
+                    {pixels[index].state=true;
+                    updateNeighbors(index,1)    
+                    fill(255)}
                 else
-                    {pixels[index].state=false;fill(0)}
+                    {pixels[index].state=false;
+                    updateNeighbors(index,-1)
+                    fill(0)}
                 rect(pixels[index].x,pixels[index].y,pixelwidth,pixelheight)
                 setTimeout(_=>{limitClicks=false},200)
             }
@@ -689,21 +687,43 @@ function drawAnX(size)
 {
         
         let mid=Math.round(pixels.length/2);
-        pixels[mid].state=true;
         fill(255);
-        rect(pixels[mid].x,pixels[mid].y,pixelwidth,pixelheight)
+        if(!pixels[mid].state)
+        {   updateNeighbors(mid,1);
+            pixels[mid].state=true;
+            rect(pixels[mid].x,pixels[mid].y,pixelwidth,pixelheight)
+        }
         
         for(let i = 1;i<size;i++)
-        {
-            fill(255);
-            pixels[mid-((wmod-1)*i)].state=true;
-            pixels[mid-((wmod+1)*i)].state=true;
-            rect(pixels[mid-((wmod-1)*i)].x,pixels[mid-((wmod-1)*i)].y,pixelwidth,pixelheight);
-            rect(pixels[mid-((wmod+1)*i)].x,pixels[mid-((wmod+1)*i)].y,pixelwidth,pixelheight);
-            pixels[mid+((wmod-1)*i)].state=true;
-            pixels[mid+((wmod+1)*i)].state=true;
-            rect(pixels[mid+((wmod-1)*i)].x,pixels[mid+((wmod-1)*i)].y,pixelwidth,pixelheight);
-            rect(pixels[mid+((wmod+1)*i)].x,pixels[mid+((wmod+1)*i)].y,pixelwidth,pixelheight);
+        {   fill(255);
+            if(!pixels[mid-((wmod-1)*i)].state)
+            {   updateNeighbors(mid-((wmod-1)*i),1)
+                pixels[mid-((wmod-1)*i)].state=true;
+                rect(pixels[mid-((wmod-1)*i)].x,pixels[mid-((wmod-1)*i)].y,pixelwidth,pixelheight);
+            }
+            
+            if(!pixels[mid-((wmod+1)*i)].state)
+            {   updateNeighbors(mid-((wmod+1)*i),1)
+                pixels[mid-((wmod+1)*i)].state=true;
+                rect(pixels[mid-((wmod+1)*i)].x,pixels[mid-((wmod+1)*i)].y,pixelwidth,pixelheight);
+            }
+            if(!pixels[mid+((wmod-1)*i)].state)
+            {  updateNeighbors(mid+((wmod-1)*i),1)
+               pixels[mid+((wmod-1)*i)].state=true;
+               rect(pixels[mid+((wmod-1)*i)].x,pixels[mid+((wmod-1)*i)].y,pixelwidth,pixelheight); 
+            }
+            if(!pixels[mid+((wmod+1)*i)].state)
+            {   updateNeighbors(mid+((wmod+1)*i),1)
+                pixels[mid+((wmod+1)*i)].state=true;
+                rect(pixels[mid+((wmod+1)*i)].x,pixels[mid+((wmod+1)*i)].y,pixelwidth,pixelheight);
+            }
+            
+            
+            
+            
+            
+            
+            
     
         }
 }
@@ -711,68 +731,55 @@ function drawAnX(size)
 function drawAnt(size)
 {
     let mid=Math.round(pixels.length/2);
-    pixels[mid].state=true;
-    fill(255);
-    rect(pixels[mid].x,pixels[mid].y,pixelwidth,pixelheight)
+    fill(255)
+    if(!pixels[mid].state)
+    {   updateNeighbors(mid,1);
+        pixels[mid].state=true;
+        rect(pixels[mid].x,pixels[mid].y,pixelwidth,pixelheight)
+    }
     
     for(let i = 1;i<size;i++)
     {
         fill(255);
-        pixels[mid-i].state=true;
-        pixels[mid-((wmod)*i)].state=true;
-        rect(pixels[mid-i].x,pixels[mid-i].y,pixelwidth,pixelheight);
-        rect(pixels[mid-((wmod)*i)].x,pixels[mid-((wmod+1)*i)].y,pixelwidth,pixelheight);
-        pixels[mid+i].state=true;
-        pixels[mid+((wmod)*i)].state=true;
-        rect(pixels[mid+i].x,pixels[mid+i].y,pixelwidth,pixelheight);
-        rect(pixels[mid+((wmod)*i)].x,pixels[mid+((wmod+1)*i)].y,pixelwidth,pixelheight);
-
-    }
-}
-
-
-function setgrid()
-{
-    pixels=[];
-    background(143, 143, 143);
-    //draw pixels(black)
-    //frameRate(2);
-    let run = true;
-    let x=0;
-    let y=0;
-    let f=0;
-    let rowcount=0;
-    let xcount=0;
-    fill(f)
-    while(run)
-    {
-        
-        rect(x,y,pixelwidth,pixelheight); 
-        pixels.push({x:x,y:y,state:false})
-        xcount++;
-        if(xcount<wmod)
-            x=x+pixelwidth;
-        else{
-            y=y+pixelheight;
-            x=0;
-            xcount=0;
-            rowcount++;
+        if(!pixels[mid-i].state)
+        {   updateNeighbors(mid-i,1)
+            pixels[mid-i].state=true;
+            rect(pixels[mid-i].x,pixels[mid-i].y,pixelwidth,pixelheight);
         }
+        if(!pixels[mid-((wmod)*i)].state)
+        {   updateNeighbors(mid-((wmod)*i),1)
+            pixels[mid-((wmod)*i)].state=true;
+            rect(pixels[mid-((wmod)*i)].x,pixels[mid-((wmod+1)*i)].y,pixelwidth,pixelheight);
+        }
+        if(!pixels[mid+i].state)
+        {   updateNeighbors(mid+i,1)
+            pixels[mid+i].state=true;
+            rect(pixels[mid+i].x,pixels[mid+i].y,pixelwidth,pixelheight);
+        }
+        if(!pixels[mid+((wmod)*i)].state)
+        {   updateNeighbors(mid+((wmod)*i),1)
+            pixels[mid+((wmod)*i)].state=true;
+            rect(pixels[mid+((wmod)*i)].x,pixels[mid+((wmod+1)*i)].y,pixelwidth,pixelheight);
+        }
+       
         
-        if(rowcount>hmod)
-            run=false;
         
         
+        
+
     }
-    console.log(pixels.length)
 }
+
+
+
+
 
 
 function visualize()
 {
     analyser.getByteFrequencyData(freqData);
-    drawAnt(freqData[40]*.25);
-    drawAnX(freqData[10]*.25);
+    drawAnt(freqData[10]*(.25*scale));
+    drawAnX(freqData[25]*(.25*scale));
 }
-
-alert("hi and welcome! here is a breakdown of the controls. \nclick around to draw\n press P to start and pause\npress x to draw and X\npress t to draw a t\nthe R key will reset the canvas\npress l then m and finally v after interacting with the page to start a music visualizer.\nnew:press 1-9 to change things up\npress b to switch to a completely random ruleset\nthis will be updated later with a helpful ui, but works for now.")
+//i hate this thing v
+//alert("hi and welcome! here is a breakdown of the controls. \nclick around to draw\n press P to start and pause\npress x to draw and X\npress t to draw a t\nthe R key will reset the canvas\npress l then m and finally v after interacting with the page to start a music visualizer.\nnew:press 1-9 to change things up\npress b to switch to a completely random ruleset\nthis will be updated later with a helpful ui, but works for now.")
